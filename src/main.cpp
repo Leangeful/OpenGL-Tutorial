@@ -75,7 +75,80 @@ void specifyVertices() {
   glDisableVertexAttribArray(0);
 };
 
-void createGraphicsPipeline(){};
+GLuint createShaderProgram(const GLchar* vertexShaderSource,
+                           const GLchar* fragmentShaderSource) {
+  GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
+
+  glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+  glCompileShader(vertexShader);
+
+  GLint vertexCompiled;
+  glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &vertexCompiled);
+
+  if (!vertexCompiled) {
+    GLsizei log_length = 0;
+    GLchar message[1024];
+    glGetShaderInfoLog(vertexShader, 1024, &log_length, message);
+
+    std::cout << "ERROR VERTEX SHADER COMPILE" << std::endl
+              << message << std::endl;
+  }
+
+  GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+
+  glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+  glCompileShader(fragmentShader);
+
+  GLint fragmentCompiled;
+  glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &fragmentCompiled);
+
+  if (!fragmentCompiled) {
+    GLsizei log_length = 0;
+    GLchar message[1024];
+    glGetShaderInfoLog(fragmentShader, 1024, &log_length, message);
+
+    std::cout << "ERROR FRAGMENT SHADER COMPILE" << std::endl
+              << message << std::endl;
+  }
+
+  GLuint program = glCreateProgram();
+  // glBindAttribLocation(program, 0, "position");
+  glAttachShader(program, vertexShader);
+  glAttachShader(program, fragmentShader);
+  glLinkProgram(program);
+
+  GLint programLinked;
+  glGetProgramiv(program, GL_LINK_STATUS, &programLinked);
+
+  if (!programLinked) {
+    GLsizei logLength = 0;
+    GLchar message[1024];
+    glGetProgramInfoLog(program, 1024, &logLength, message);
+    std::cout << "ERROR SHADER PROGRAM LINKING" << std::endl
+              << message << std::endl;
+  }
+
+  return program;
+}
+
+void createGraphicsPipeline() {
+  const GLchar* vertexShaderSource =
+      "#version 460 core\n"
+      "layout (location = 0) in vec3 aPos;\n"
+      "void main(){\n"
+      "    gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+      "}\0";
+
+  const GLchar* fragmentShaderSource =
+      "#version 460 core\n"
+      "out vec4 FragColor;\n"
+      "void main()\n"
+      "{\n"
+      "    FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+      "}\0";
+
+  shaderProgram = createShaderProgram(vertexShaderSource, fragmentShaderSource);
+};
 
 void handleInput() {
   SDL_Event e;
@@ -87,8 +160,18 @@ void handleInput() {
   }
 }
 
-void preDraw(){};
-void draw(){};
+void preDraw() {
+  glClearColor(0.09, 0.10, 0.11, 1.0f);
+  glClear(GL_COLOR_BUFFER_BIT);
+};
+void draw() {
+  glUseProgram(shaderProgram);
+  // glEnableVertexAttribArray(0);
+  glBindVertexArray(VAO);
+
+  glDrawArrays(GL_TRIANGLES, 0, 3);
+  // glDrawBuffer(VBO);
+};
 
 void cleanUp() {
   SDL_DestroyWindow(window);
