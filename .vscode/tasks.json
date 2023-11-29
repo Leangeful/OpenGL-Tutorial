@@ -10,7 +10,6 @@
                 "-L${workspaceFolder}\\lib",
                 "-g",
                 "${workspaceFolder}/src/*.cpp",
-                "${workspaceFolder}/src/*.c",
                 "-lSDL2",
                 "-lSDL2main",
                 "-o",
