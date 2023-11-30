@@ -2,9 +2,10 @@
 
 #include "init.hpp"
 #include <vector>
+#include <string>
 
-int windowWidth = 800;
-int windowHeight = 600;
+int windowWidth = 500;
+int windowHeight = 500;
 const std::string windowTitle = "OpenGL Window";
 
 bool shouldQuit = false;
@@ -15,6 +16,16 @@ SDL_GLContext glContext = nullptr;
 GLuint VAO;
 GLuint VBO;
 GLuint shaderProgram;
+
+const std::vector<GLfloat> triangleVerts{
+    -.2f, .4f, .0f,   //  v0
+    -.2f, .0f, .0f,   //  v1
+    .2f,  .4f, .0f,   //  v2
+    .2f,  .0f, .0f,   //  v3
+    .4f,  .4f, -.4f,  //  v4
+    .4f,  .0f, -.4f,  //  v5
+
+};
 
 void specifyVertices();
 void createGraphicsPipeline();
@@ -52,13 +63,6 @@ void mainLoop() {
 };
 
 void specifyVertices() {
-  const std::vector<GLfloat> triangleVerts{
-      -0.8f, -0.8f, .0f,  //  v1
-      0.8f,  -0.8f, .0f,  //  v2
-      0.0f,  0.8f,  .0f   //  v3
-
-  };
-
   glGenVertexArrays(1, &VAO);
   glBindVertexArray(VAO);
 
@@ -75,44 +79,38 @@ void specifyVertices() {
   glDisableVertexAttribArray(0);
 };
 
+GLuint compileShader(GLuint type, const GLchar* source) {
+  GLuint shader = glCreateShader(type);
+
+  std::string typeString =
+      type == GL_VERTEX_SHADER ? "GL_VERTEX_SHADER" : "GL_FAGMENT_SHADER";
+
+  glShaderSource(shader, 1, &source, NULL);
+  glCompileShader(shader);
+
+  GLint shaderCompiled;
+  glGetShaderiv(shader, GL_COMPILE_STATUS, &shaderCompiled);
+
+  if (!shaderCompiled) {
+    GLsizei log_length = 0;
+    GLchar message[1024];
+    glGetShaderInfoLog(shader, 1024, &log_length, message);
+
+    std::cout << "ERROR COMPILING SHADER" << std::endl
+              << typeString << std::endl
+              << message << std::endl;
+  }
+  return shader;
+}
+
 GLuint createShaderProgram(const GLchar* vertexShaderSource,
                            const GLchar* fragmentShaderSource) {
-  GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
+  GLuint vertexShader = compileShader(GL_VERTEX_SHADER, vertexShaderSource);
 
-  glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-  glCompileShader(vertexShader);
-
-  GLint vertexCompiled;
-  glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &vertexCompiled);
-
-  if (!vertexCompiled) {
-    GLsizei log_length = 0;
-    GLchar message[1024];
-    glGetShaderInfoLog(vertexShader, 1024, &log_length, message);
-
-    std::cout << "ERROR VERTEX SHADER COMPILE" << std::endl
-              << message << std::endl;
-  }
-
-  GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-
-  glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-  glCompileShader(fragmentShader);
-
-  GLint fragmentCompiled;
-  glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &fragmentCompiled);
-
-  if (!fragmentCompiled) {
-    GLsizei log_length = 0;
-    GLchar message[1024];
-    glGetShaderInfoLog(fragmentShader, 1024, &log_length, message);
-
-    std::cout << "ERROR FRAGMENT SHADER COMPILE" << std::endl
-              << message << std::endl;
-  }
+  GLuint fragmentShader =
+      compileShader(GL_FRAGMENT_SHADER, fragmentShaderSource);
 
   GLuint program = glCreateProgram();
-  // glBindAttribLocation(program, 0, "position");
   glAttachShader(program, vertexShader);
   glAttachShader(program, fragmentShader);
   glLinkProgram(program);
@@ -155,25 +153,51 @@ void handleInput() {
   while (SDL_PollEvent(&e)) {
     if (e.type == SDL_QUIT) shouldQuit = true;
 
-    if (e.type == SDL_KEYDOWN)
-      if (e.key.keysym.sym == SDLK_ESCAPE) shouldQuit = true;
+    if (e.type == SDL_KEYDOWN) {
+      switch (e.key.keysym.sym) {
+        case SDLK_ESCAPE:
+          shouldQuit = true;
+          break;
+
+        case SDLK_a:
+          std::cout << "Move Left Repeat: " << std::to_string(e.key.repeat)
+                    << std::endl;
+          break;
+
+        default:
+          break;
+      }
+    }
+
+    // if (e.type == SDL_WINDOWEVENT) {
+    if (e.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
+      // TODO Account for different types of window scaling
+      // currently: stretch
+      windowWidth = e.window.data1;
+      windowHeight = e.window.data2;
+    }
+    //}
   }
 }
 
 void preDraw() {
+  // glDisable(GL_DEPTH_TEST);
+  // glDisable(GL_CULL_FACE);
+
+  glViewport(0, 0, windowWidth, windowHeight);
+
   glClearColor(0.09, 0.10, 0.11, 1.0f);
-  glClear(GL_COLOR_BUFFER_BIT);
+  glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+  glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 };
 void draw() {
   glUseProgram(shaderProgram);
-  // glEnableVertexAttribArray(0);
   glBindVertexArray(VAO);
-
-  glDrawArrays(GL_TRIANGLES, 0, 3);
-  // glDrawBuffer(VBO);
+  glDrawArrays(GL_TRIANGLE_STRIP, 0, triangleVerts.size() / 3);
 };
 
 void cleanUp() {
+  std::cout << "CleanUp" << std::endl;
   SDL_DestroyWindow(window);
   SDL_Quit();
 };
