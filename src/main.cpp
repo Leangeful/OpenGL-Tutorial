@@ -1,13 +1,13 @@
 #define SDL_MAIN_HANDLED
 #define BUFFER_OFFSET(i) ((char*)NULL + (i))
 
-#include "init.hpp"
+#include <iostream>
 #include <vector>
 #include <string>
-#include <fstream>
-#include <cstring>
 #include <filesystem>
+
 #include "GraphicsPipeline.hpp"
+#include "Core.hpp"
 
 int windowWidth = 500;
 int windowHeight = 500;
@@ -16,13 +16,12 @@ const std::string windowTitle = "OpenGL Window";
 bool shouldQuit = false;
 bool wireframeMode = false;
 
-SDL_Window* window = nullptr;
-SDL_GLContext glContext = nullptr;
+Core core;
 
 GLuint VAO;
 GLuint VBO;
 GLuint EBO;
-// GLuint shaderProgram;
+
 GraphicsPipeline defaultGP;
 
 const GLuint posAttribLen = 3;
@@ -53,24 +52,21 @@ const std::vector<GLuint> objectIdxs{
 };
 
 void specifyVertices();
-void createGraphicsPipeline();
 void mainLoop();
 void handleInput();
 void preDraw();
 void draw();
 void cleanUp();
 void printOpenGLVersionInfo();
-std::string loadShaderFile(std::string filePath);
 
 int main() {
-  window = initWindow(windowTitle, windowWidth, windowHeight);
-  glContext = initGL(window);
+  core = Core(windowTitle, windowWidth, windowHeight);
 
   printOpenGLVersionInfo();
 
   specifyVertices();
 
-  createGraphicsPipeline();
+  defaultGP = GraphicsPipeline();
 
   mainLoop();
 
@@ -84,7 +80,7 @@ void mainLoop() {
     handleInput();
     preDraw();
     draw();
-    SDL_GL_SwapWindow(window);
+    SDL_GL_SwapWindow(core.window);
   }
 };
 
@@ -115,74 +111,6 @@ void specifyVertices() {
   glDisableVertexAttribArray(1);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-};
-
-GLuint compileShader(GLuint type, const GLchar* source) {
-  GLuint shader = glCreateShader(type);
-
-  std::string typeString =
-      type == GL_VERTEX_SHADER ? "GL_VERTEX_SHADER" : "GL_FAGMENT_SHADER";
-
-  glShaderSource(shader, 1, &source, NULL);
-  glCompileShader(shader);
-
-  GLint shaderCompiled;
-  glGetShaderiv(shader, GL_COMPILE_STATUS, &shaderCompiled);
-
-  if (!shaderCompiled) {
-    GLsizei log_length = 0;
-    GLchar message[1024];
-    glGetShaderInfoLog(shader, 1024, &log_length, message);
-
-    std::cout << "ERROR COMPILING SHADER" << std::endl
-              << typeString << std::endl
-              << message << std::endl;
-  }
-  return shader;
-}
-
-GLuint createShaderProgram(std::string& vertexShaderSource,
-                           std::string& fragmentShaderSource) {
-  const GLchar* vSource = vertexShaderSource.c_str();
-  const GLchar* fSource = fragmentShaderSource.c_str();
-
-  GLuint vertexShader = compileShader(GL_VERTEX_SHADER, vSource);
-  GLuint fragmentShader = compileShader(GL_FRAGMENT_SHADER, fSource);
-
-  GLuint program = glCreateProgram();
-  glAttachShader(program, vertexShader);
-  glAttachShader(program, fragmentShader);
-  glLinkProgram(program);
-
-  GLint programLinked;
-  glGetProgramiv(program, GL_LINK_STATUS, &programLinked);
-
-  if (!programLinked) {
-    GLsizei logLength = 0;
-    GLchar message[1024];
-    glGetProgramInfoLog(program, 1024, &logLength, message);
-    std::cout << "ERROR SHADER PROGRAM LINKING" << std::endl
-              << message << std::endl;
-  }
-
-  glDetachShader(program, vertexShader);
-  glDetachShader(program, fragmentShader);
-
-  glDeleteShader(vertexShader);
-  glDeleteShader(fragmentShader);
-
-  return program;
-}
-
-void createGraphicsPipeline() {
-  defaultGP = GraphicsPipeline();
-  /* std::string vertexShaderSource =
-  loadShaderFile(".\\shaders\\basic.vert");
-
-  std::string fragmentShaderSource = loadShaderFile(".\\shaders\\basic.frag");
-
-  shaderProgram = createShaderProgram(vertexShaderSource,
-  fragmentShaderSource); */
 };
 
 void handleInput() {
@@ -234,7 +162,6 @@ void preDraw() {
   glPolygonMode(GL_FRONT_AND_BACK, wireframeMode ? GL_LINE : GL_FILL);
 };
 void draw() {
-  // glUseProgram(shaderProgram);
   glUseProgram(defaultGP.program);
   glBindVertexArray(VAO);
   glDrawElements(GL_TRIANGLES, objectIdxs.size(), GL_UNSIGNED_INT, 0);
@@ -244,7 +171,7 @@ void draw() {
 
 void cleanUp() {
   std::cout << "CleanUp" << std::endl;
-  SDL_DestroyWindow(window);
+  SDL_DestroyWindow(core.window);
   SDL_Quit();
 };
 
@@ -259,22 +186,4 @@ void printOpenGLVersionInfo() {
   glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
   std::cout << "Maximum nr of vertex attributes supported: " << nrAttributes
             << std::endl;
-}
-
-std::string loadShaderFile(std::string filePath) {
-  std::ifstream sourceFile(filePath);
-  std::string source = "";
-  std::string tmp;
-
-  if (sourceFile.is_open()) {
-    while (std::getline(sourceFile, tmp)) {
-      source += tmp + '\n';
-    }
-    sourceFile.close();
-  } else {
-    std::cerr << "ERROR LOADING SOURCE" << std::endl
-              << std::strerror(errno) << std::endl;
-  }
-
-  return source;
 }

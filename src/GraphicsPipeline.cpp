@@ -29,9 +29,11 @@ GLuint GraphicsPipeline::compileShader(GLuint type, const GLchar* source) {
 }
 
 GraphicsPipeline::GraphicsPipeline() {
-  std::string defaultVertPath = ".\\shaders\\basic.vert";
-  std::string defaultFragPath = ".\\shaders\\basic.frag";
-  createGraphicsPipeline(defaultVertPath, defaultFragPath);
+  if (SDL_GL_GetCurrentContext()) {
+    std::string defaultVertPath = ".\\shaders\\basic.vert";
+    std::string defaultFragPath = ".\\shaders\\basic.frag";
+    createGraphicsPipeline(defaultVertPath, defaultFragPath);
+  }
 }
 
 GraphicsPipeline::GraphicsPipeline(std::string& vertPath,

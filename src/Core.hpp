@@ -1,11 +1,11 @@
-#ifndef CONTEXTWINDOW_HPP
-#define CONTEXTWINDOW_HPP
+#ifndef CORE_HPP
+#define CORE_HPP
 
 #include <SDL2/SDL.h>
 #include <glad/glad.h>
 #include <string>
 
-class ContextWindow {
+class Core {
  private:
   SDL_Window* initWindow(const std::string windowTitle, int windowWidth,
                          int windowHeight);
@@ -15,8 +15,8 @@ class ContextWindow {
  public:
   SDL_Window* window = nullptr;
   SDL_GLContext context = nullptr;
-  ContextWindow(const std::string windowTitle, int windowWidth,
-                int windowHeight);
-  ~ContextWindow();
+  Core();
+  Core(const std::string windowTitle, int windowWidth, int windowHeight);
+  ~Core();
 };
 #endif

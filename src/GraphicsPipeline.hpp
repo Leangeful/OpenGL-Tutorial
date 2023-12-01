@@ -8,6 +8,8 @@
 
 class GraphicsPipeline {
  private:
+  SDL_Window* window = nullptr;
+  SDL_GLContext context = nullptr;
   GLuint compileShader(GLuint type, const GLchar* source);
   std::string loadShaderFile(std::string& filePath);
   void createGraphicsPipeline(std::string& vertexShaderPath,

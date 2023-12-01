@@ -1,7 +1,16 @@
-#include "init.hpp"
+#include "Core.hpp"
+#include <iostream>
 
-SDL_Window* initWindow(const std::string windowTitle, int windowWidth,
-                       int windowHeight) {
+Core::Core() {}
+Core::Core(const std::string windowTitle, int windowWidth, int windowHeight) {
+  window = initWindow(windowTitle, windowWidth, windowHeight);
+  context = initGL(window);
+}
+
+Core::~Core() {}
+
+SDL_Window* Core::initWindow(const std::string windowTitle, int windowWidth,
+                             int windowHeight) {
   SDL_Window* window = nullptr;
   int err = SDL_Init(SDL_INIT_VIDEO);
   if (err < 0) {
@@ -21,7 +30,7 @@ SDL_Window* initWindow(const std::string windowTitle, int windowWidth,
   return window;
 };
 
-SDL_GLContext initGL(SDL_Window* window) {
+SDL_GLContext Core::initGL(SDL_Window* window) {
   SDL_GLContext glContext = nullptr;
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 6);
