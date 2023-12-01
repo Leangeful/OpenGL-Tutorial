@@ -7,6 +7,7 @@
 #include <fstream>
 #include <cstring>
 #include <filesystem>
+#include "GraphicsPipeline.hpp"
 
 int windowWidth = 500;
 int windowHeight = 500;
@@ -21,7 +22,8 @@ SDL_GLContext glContext = nullptr;
 GLuint VAO;
 GLuint VBO;
 GLuint EBO;
-GLuint shaderProgram;
+// GLuint shaderProgram;
+GraphicsPipeline defaultGP;
 
 const GLuint posAttribLen = 3;
 const GLuint colAttribLen = 4;
@@ -173,11 +175,14 @@ GLuint createShaderProgram(std::string& vertexShaderSource,
 }
 
 void createGraphicsPipeline() {
-  std::string vertexShaderSource = loadShaderFile(".\\shaders\\basic.vert");
+  defaultGP = GraphicsPipeline();
+  /* std::string vertexShaderSource =
+  loadShaderFile(".\\shaders\\basic.vert");
 
   std::string fragmentShaderSource = loadShaderFile(".\\shaders\\basic.frag");
 
-  shaderProgram = createShaderProgram(vertexShaderSource, fragmentShaderSource);
+  shaderProgram = createShaderProgram(vertexShaderSource,
+  fragmentShaderSource); */
 };
 
 void handleInput() {
@@ -229,7 +234,8 @@ void preDraw() {
   glPolygonMode(GL_FRONT_AND_BACK, wireframeMode ? GL_LINE : GL_FILL);
 };
 void draw() {
-  glUseProgram(shaderProgram);
+  // glUseProgram(shaderProgram);
+  glUseProgram(defaultGP.program);
   glBindVertexArray(VAO);
   glDrawElements(GL_TRIANGLES, objectIdxs.size(), GL_UNSIGNED_INT, 0);
   glBindVertexArray(0);
