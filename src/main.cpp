@@ -1,4 +1,5 @@
 #define SDL_MAIN_HANDLED
+#define BUFFER_OFFSET(i) ((char*)NULL + (i))
 
 #include "init.hpp"
 #include <vector>
@@ -22,15 +23,24 @@ GLuint VBO;
 GLuint EBO;
 GLuint shaderProgram;
 
-std::vector<GLfloat> objectVerts{
-    -.2f, .4f, .0f,  //  v0
-    -.2f, .0f, .0f,  //  v1
-    .2f,  .4f, .0f,  //  v2
-    .2f,  .0f, .0f,  //  v3
-    .4f,  .4f, .0f,  //  v4
-    .4f,  .0f, .0f,  //  v5
+const GLuint posAttribLen = 3;
+const GLuint colAttribLen = 4;
+const GLuint attribStride = posAttribLen + colAttribLen;
 
+struct vertex {
+  GLfloat posX, posY, posZ;
+  GLfloat colR, colG, colB, colA;
 };
+
+std::vector<vertex> objectVerts{
+    {-.2f, .4f, .0f, 0.38f, 0.71f, 0.71f, 1.0f},  //  v0
+    {-.2f, .0f, .0f, 0.71f, 0.54f, 0.38f, 1.0f},  //  v1
+    {.2f, .4f, .0f, 0.71f, 0.38f, 0.63f, 1.0f},   //  v2
+    {.2f, .0f, .0f, 0.38f, 0.71f, 0.71f, 1.0f},   //  v3
+    {.4f, .4f, .0f, 0.71f, 0.54f, 0.38f, 1.0f},   //  v4
+    {.4f, .0f, .0f, 0.71f, 0.38f, 0.63f, 1.0f},   //  v5
+};
+
 const std::vector<GLuint> objectIdxs{
     0, 1, 2,  // first triangle
     1, 2, 3,  // second triangle
@@ -82,7 +92,7 @@ void specifyVertices() {
 
   glGenBuffers(1, &VBO);
   glBindBuffer(GL_ARRAY_BUFFER, VBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * objectVerts.size(),
+  glBufferData(GL_ARRAY_BUFFER, sizeof(vertex) * objectVerts.size(),
                objectVerts.data(), GL_STATIC_DRAW);
 
   glGenBuffers(1, &EBO);
@@ -91,10 +101,16 @@ void specifyVertices() {
                objectIdxs.data(), GL_STATIC_DRAW);
 
   glEnableVertexAttribArray(0);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+  glEnableVertexAttribArray(1);
+
+  glVertexAttribPointer(0, posAttribLen, GL_FLOAT, GL_FALSE, sizeof(vertex),
+                        BUFFER_OFFSET(0));
+  glVertexAttribPointer(1, colAttribLen, GL_FLOAT, GL_FALSE, sizeof(vertex),
+                        BUFFER_OFFSET(sizeof(GLfloat) * posAttribLen));
 
   glBindVertexArray(0);
   glDisableVertexAttribArray(0);
+  glDisableVertexAttribArray(1);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 };
@@ -231,6 +247,11 @@ void printOpenGLVersionInfo() {
   std::cout << "Renderer: " << glGetString(GL_RENDERER) << std::endl;
   std::cout << "Version: " << glGetString(GL_VERSION) << std::endl;
   std::cout << "SL Version: " << glGetString(GL_SHADING_LANGUAGE_VERSION)
+            << std::endl;
+
+  int nrAttributes;
+  glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
+  std::cout << "Maximum nr of vertex attributes supported: " << nrAttributes
             << std::endl;
 }
 
