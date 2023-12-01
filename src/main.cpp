@@ -3,27 +3,40 @@
 #include "init.hpp"
 #include <vector>
 #include <string>
+#include <fstream>
+#include <cstring>
+#include <filesystem>
 
 int windowWidth = 500;
 int windowHeight = 500;
 const std::string windowTitle = "OpenGL Window";
 
 bool shouldQuit = false;
+bool wireframeMode = false;
 
 SDL_Window* window = nullptr;
 SDL_GLContext glContext = nullptr;
 
 GLuint VAO;
 GLuint VBO;
+GLuint EBO;
 GLuint shaderProgram;
 
-const std::vector<GLfloat> triangleVerts{
-    -.2f, .4f, .0f,   //  v0
-    -.2f, .0f, .0f,   //  v1
-    .2f,  .4f, .0f,   //  v2
-    .2f,  .0f, .0f,   //  v3
-    .4f,  .4f, -.4f,  //  v4
-    .4f,  .0f, -.4f,  //  v5
+std::vector<GLfloat> objectVerts{
+    -.2f, .4f, .0f,  //  v0
+    -.2f, .0f, .0f,  //  v1
+    .2f,  .4f, .0f,  //  v2
+    .2f,  .0f, .0f,  //  v3
+    .4f,  .4f, .0f,  //  v4
+    .4f,  .0f, .0f,  //  v5
+
+};
+const std::vector<GLuint> objectIdxs{
+    0, 1, 2,  // first triangle
+    1, 2, 3,  // second triangle
+    2, 3, 4,  // third triangle
+    3, 4, 5,  // fourth triangle
+              // 3, 0, 2,  // random triangle
 
 };
 
@@ -35,6 +48,7 @@ void preDraw();
 void draw();
 void cleanUp();
 void printOpenGLVersionInfo();
+std::string loadShaderFile(std::string filePath);
 
 int main() {
   window = initWindow(windowTitle, windowWidth, windowHeight);
@@ -68,15 +82,21 @@ void specifyVertices() {
 
   glGenBuffers(1, &VBO);
   glBindBuffer(GL_ARRAY_BUFFER, VBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * triangleVerts.size(),
-               triangleVerts.data(), GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * objectVerts.size(),
+               objectVerts.data(), GL_STATIC_DRAW);
+
+  glGenBuffers(1, &EBO);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * objectIdxs.size(),
+               objectIdxs.data(), GL_STATIC_DRAW);
 
   glEnableVertexAttribArray(0);
-
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
   glBindVertexArray(0);
   glDisableVertexAttribArray(0);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 };
 
 GLuint compileShader(GLuint type, const GLchar* source) {
@@ -103,12 +123,13 @@ GLuint compileShader(GLuint type, const GLchar* source) {
   return shader;
 }
 
-GLuint createShaderProgram(const GLchar* vertexShaderSource,
-                           const GLchar* fragmentShaderSource) {
-  GLuint vertexShader = compileShader(GL_VERTEX_SHADER, vertexShaderSource);
+GLuint createShaderProgram(std::string& vertexShaderSource,
+                           std::string& fragmentShaderSource) {
+  const GLchar* vSource = vertexShaderSource.c_str();
+  const GLchar* fSource = fragmentShaderSource.c_str();
 
-  GLuint fragmentShader =
-      compileShader(GL_FRAGMENT_SHADER, fragmentShaderSource);
+  GLuint vertexShader = compileShader(GL_VERTEX_SHADER, vSource);
+  GLuint fragmentShader = compileShader(GL_FRAGMENT_SHADER, fSource);
 
   GLuint program = glCreateProgram();
   glAttachShader(program, vertexShader);
@@ -126,24 +147,19 @@ GLuint createShaderProgram(const GLchar* vertexShaderSource,
               << message << std::endl;
   }
 
+  glDetachShader(program, vertexShader);
+  glDetachShader(program, fragmentShader);
+
+  glDeleteShader(vertexShader);
+  glDeleteShader(fragmentShader);
+
   return program;
 }
 
 void createGraphicsPipeline() {
-  const GLchar* vertexShaderSource =
-      "#version 460 core\n"
-      "layout (location = 0) in vec3 aPos;\n"
-      "void main(){\n"
-      "    gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-      "}\0";
+  std::string vertexShaderSource = loadShaderFile(".\\shaders\\basic.vert");
 
-  const GLchar* fragmentShaderSource =
-      "#version 460 core\n"
-      "out vec4 FragColor;\n"
-      "void main()\n"
-      "{\n"
-      "    FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-      "}\0";
+  std::string fragmentShaderSource = loadShaderFile(".\\shaders\\basic.frag");
 
   shaderProgram = createShaderProgram(vertexShaderSource, fragmentShaderSource);
 };
@@ -161,6 +177,12 @@ void handleInput() {
 
         case SDLK_a:
           std::cout << "Move Left Repeat: " << std::to_string(e.key.repeat)
+                    << std::endl;
+          break;
+
+        case SDLK_p:
+          wireframeMode = !wireframeMode;
+          std::cout << "wireframeMode: " << std::to_string(wireframeMode)
                     << std::endl;
           break;
 
@@ -188,12 +210,14 @@ void preDraw() {
 
   glClearColor(0.09, 0.10, 0.11, 1.0f);
   glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-  glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+  glPolygonMode(GL_FRONT_AND_BACK, wireframeMode ? GL_LINE : GL_FILL);
 };
 void draw() {
   glUseProgram(shaderProgram);
   glBindVertexArray(VAO);
-  glDrawArrays(GL_TRIANGLE_STRIP, 0, triangleVerts.size() / 3);
+  glDrawElements(GL_TRIANGLES, objectIdxs.size(), GL_UNSIGNED_INT, 0);
+  glBindVertexArray(0);
+  glUseProgram(0);
 };
 
 void cleanUp() {
@@ -208,4 +232,22 @@ void printOpenGLVersionInfo() {
   std::cout << "Version: " << glGetString(GL_VERSION) << std::endl;
   std::cout << "SL Version: " << glGetString(GL_SHADING_LANGUAGE_VERSION)
             << std::endl;
+}
+
+std::string loadShaderFile(std::string filePath) {
+  std::ifstream sourceFile(filePath);
+  std::string source = "";
+  std::string tmp;
+
+  if (sourceFile.is_open()) {
+    while (std::getline(sourceFile, tmp)) {
+      source += tmp + '\n';
+    }
+    sourceFile.close();
+  } else {
+    std::cerr << "ERROR LOADING SOURCE" << std::endl
+              << std::strerror(errno) << std::endl;
+  }
+
+  return source;
 }
