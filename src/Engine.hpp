@@ -33,7 +33,6 @@ class Engine {
   SDL_GLContext context = nullptr;
   Scene* activeScene = nullptr;
 
-  // GraphicsPipeline defaultGP;
   GLuint defaultShaderProgram;
 };
 #endif

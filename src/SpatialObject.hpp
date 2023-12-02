@@ -15,7 +15,6 @@ class SpatialObject {
   std::vector<GLuint> idxs;
 
  public:
-  // GLuint shaderProgram = 0;
   Shader* shader = nullptr;
   GLuint primitiveMode = GL_TRIANGLES;
 

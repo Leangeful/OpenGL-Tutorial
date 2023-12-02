@@ -82,7 +82,7 @@ int main() {
   SpatialObject testThing(objectVerts, objectIdxs);
   SpatialObject triangle2(object2, idxs2);
 
-  // triangle2.shaderProgram = redShaderProg;
+  triangle2.shader = &redShader;
 
   // testThing.primitiveMode = GL_TRIANGLE_FAN;
 
