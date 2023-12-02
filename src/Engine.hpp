@@ -5,7 +5,6 @@
 #include <glad/glad.h>
 #include <string>
 #include "Scene.hpp"
-#include "GraphicsPipeline.hpp"
 
 class Engine {
  private:

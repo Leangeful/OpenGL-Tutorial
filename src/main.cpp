@@ -3,7 +3,6 @@
 #include <vector>
 #include <iostream>
 
-#include "GraphicsPipeline.hpp"
 #include "Engine.hpp"
 #include "SpatialObject.hpp"
 #include "whereami.h"
@@ -74,12 +73,11 @@ int main() {
 
   engine.printOpenGLVersionInfo();
 
-  GLuint defaultShaderProg =
-      createGraphicsPipeline(defaultVertPath, defaultFragPath);
-  GLuint redShaderProg = createGraphicsPipeline(defaultVertPath, redFragPath);
+  Shader defaultShader(defaultVertPath, defaultFragPath);
+  Shader redShader(defaultVertPath, redFragPath);
 
   Scene startScene;
-  startScene.shaderProgram = defaultShaderProg;
+  startScene.shader = &defaultShader;
 
   SpatialObject testThing(objectVerts, objectIdxs);
   SpatialObject triangle2(object2, idxs2);

@@ -1,6 +1,6 @@
 #include "SpatialObject.hpp"
 
-SpatialObject::SpatialObject(/* args */) {}
+SpatialObject::SpatialObject() {}
 
 SpatialObject::SpatialObject(std::vector<vertex> objectVerts,
                              std::vector<GLuint> objectIdxs) {
@@ -9,10 +9,8 @@ SpatialObject::SpatialObject(std::vector<vertex> objectVerts,
   specifyVertices();
 }
 
-SpatialObject::~SpatialObject() {}
-
 void SpatialObject::draw() {
-  glUseProgram(shaderProgram);
+  glUseProgram(shader->ID);
   glBindVertexArray(VAO);
   glDrawElements(primitiveMode, idxs.size(), GL_UNSIGNED_INT, 0);
   glBindVertexArray(0);

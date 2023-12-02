@@ -3,16 +3,15 @@
 
 #include <vector>
 #include "SpatialObject.hpp"
+#include "Shader.hpp"
 
 class Scene {
  public:
-  Scene();
-  ~Scene();
+  Shader* shader = nullptr;
+  std::vector<SpatialObject> spatialObjects;
 
+  Scene();
   void draw();
   void addObject(SpatialObject obj);
-
-  GLuint shaderProgram;
-  std::vector<SpatialObject> spatialObjects;
 };
 #endif

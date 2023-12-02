@@ -4,6 +4,7 @@
 #include <vector>
 #include <glad/glad.h>
 #include "types.hpp"
+#include "Shader.hpp"
 
 class SpatialObject {
  private:
@@ -14,17 +15,16 @@ class SpatialObject {
   std::vector<GLuint> idxs;
 
  public:
+  // GLuint shaderProgram = 0;
+  Shader* shader = nullptr;
+  GLuint primitiveMode = GL_TRIANGLES;
+
   SpatialObject();
   SpatialObject(std::vector<vertex> objectVerts,
                 std::vector<GLuint> objectIdxs);
-  ~SpatialObject();
 
   void specifyVertices();
-
   void draw();
-
-  GLuint shaderProgram = 0;
-  GLuint primitiveMode = GL_TRIANGLES;
 };
 
 #endif /* SPATIALOBJECT_HPP */
