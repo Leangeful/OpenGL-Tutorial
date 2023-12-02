@@ -18,6 +18,7 @@ std::string exePath = "";
 std::string defaultVertPath = "shaders\\basic.vert";
 std::string defaultFragPath = "shaders\\basic.frag";
 std::string redFragPath = "shaders\\red.frag";
+std::string redVertPath = "shaders\\red.vert";
 
 // TODO import objects from file
 std::vector<vertex> objectVerts{
@@ -37,9 +38,9 @@ std::vector<GLuint> objectIdxs{
 };
 
 std::vector<vertex> object2{
-    {.6f, .5f, .0f, 0.38f, 0.72f, 0.48f, 1.0f},   //  v0
-    {1.0f, .5f, .0f, 0.38f, 0.72f, 0.48f, 1.0f},  //  v1
-    {.8f, .8f, .0f, 0.0f, 0.72f, 0.48f, 1.0f},    //  v2
+    {-.2f, .5f, .0f, 0.38f, 0.72f, 0.48f, 1.0f},  //  v0
+    {.2f, .5f, .0f, 0.38f, 0.72f, 0.48f, 1.0f},   //  v1
+    {.0f, .8f, .0f, 0.0f, 0.72f, 0.48f, 1.0f},    //  v2
 };
 
 std::vector<GLuint> idxs2{
@@ -62,6 +63,7 @@ void makeShaderPaths() {
   defaultVertPath = exePath + defaultVertPath;
   defaultFragPath = exePath + defaultFragPath;
   redFragPath = exePath + redFragPath;
+  redVertPath = exePath + redVertPath;
 }
 
 int main() {
@@ -74,7 +76,7 @@ int main() {
   engine.printOpenGLVersionInfo();
 
   Shader defaultShader(defaultVertPath, defaultFragPath);
-  Shader redShader(defaultVertPath, redFragPath);
+  Shader redShader(redVertPath, redFragPath);
 
   Scene startScene;
   startScene.shader = &defaultShader;

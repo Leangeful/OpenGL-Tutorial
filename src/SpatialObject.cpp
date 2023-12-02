@@ -10,7 +10,8 @@ SpatialObject::SpatialObject(std::vector<vertex> objectVerts,
 }
 
 void SpatialObject::draw() {
-  glUseProgram(shader->ID);
+  shader->use();
+  shader->setFloat("xOffset", 0.5);
   glBindVertexArray(VAO);
   glDrawElements(primitiveMode, idxs.size(), GL_UNSIGNED_INT, 0);
   glBindVertexArray(0);

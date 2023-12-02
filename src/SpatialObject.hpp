@@ -17,6 +17,7 @@ class SpatialObject {
  public:
   Shader* shader = nullptr;
   GLuint primitiveMode = GL_TRIANGLES;
+  // TODO create list(s) for shader attributes
 
   SpatialObject();
   SpatialObject(std::vector<vertex> objectVerts,
