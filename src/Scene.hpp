@@ -3,15 +3,16 @@
 
 #include <vector>
 #include "SpatialObject.hpp"
-class Scene {
- private:
-  /* data */
- public:
-  Scene(/* args */);
-  ~Scene();
-  void preDraw();
-  void draw();
 
+class Scene {
+ public:
+  Scene();
+  ~Scene();
+
+  void draw();
+  void addObject(SpatialObject obj);
+
+  GLuint program;
   std::vector<SpatialObject> spatialObjects;
 };
 #endif
