@@ -48,18 +48,17 @@ int main() {
 
   engine.printOpenGLVersionInfo();
 
-  engine.defaultShaderProgram =
+  GLuint defaultShaderProg =
       createGraphicsPipeline(defaultVertPath, defaultFragPath);
+  GLuint redShaderProg = createGraphicsPipeline(defaultVertPath, redFragPath);
 
   Scene startScene;
-  startScene.shaderProgram = engine.defaultShaderProgram;
+  startScene.shaderProgram = defaultShaderProg;
 
   SpatialObject testThing(objectVerts, objectIdxs);
   SpatialObject triangle2(object2, idxs2);
 
-  // TODO maintain a list of programs for later use?
-  triangle2.shaderProgram =
-      createGraphicsPipeline(defaultVertPath, redFragPath);
+  triangle2.shaderProgram = redShaderProg;
 
   std::cout << triangle2.shaderProgram << std::endl;
 
