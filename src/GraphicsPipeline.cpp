@@ -4,7 +4,6 @@
 #include <cstring>
 
 GLuint GraphicsPipeline::compileShader(GLuint type, const GLchar* source) {
-  std::cout << "context: " << SDL_GL_GetCurrentContext() << std::endl;
   GLuint shader = glCreateShader(type);
 
   std::string typeString =
@@ -30,8 +29,6 @@ GLuint GraphicsPipeline::compileShader(GLuint type, const GLchar* source) {
 
 GraphicsPipeline::GraphicsPipeline() {
   if (SDL_GL_GetCurrentContext()) {
-    std::string defaultVertPath = ".\\shaders\\basic.vert";
-    std::string defaultFragPath = ".\\shaders\\basic.frag";
     createGraphicsPipeline(defaultVertPath, defaultFragPath);
   }
 }
@@ -43,7 +40,6 @@ GraphicsPipeline::GraphicsPipeline(std::string& vertPath,
 
 void GraphicsPipeline::createGraphicsPipeline(std::string& vertexShaderPath,
                                               std::string& fragmentShaderPath) {
-  printf("FP create: %s\n", vertexShaderPath);
   std::string vertexShaderSource = loadShaderFile(vertexShaderPath);
   std::string fragmentShaderSource = loadShaderFile(fragmentShaderPath);
 
@@ -79,7 +75,6 @@ void GraphicsPipeline::createGraphicsPipeline(std::string& vertexShaderPath,
 
 std::string GraphicsPipeline::loadShaderFile(std::string& filePath) {
   std::ifstream sourceFile(filePath);
-  std::cout << "FP load: " << filePath << std::endl;
   std::string source = "";
   std::string tmp;
 

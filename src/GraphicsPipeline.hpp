@@ -5,6 +5,8 @@
 #include <glad/glad.h>
 
 #include <string>
+static std::string defaultVertPath = ".\\shaders\\basic.vert";
+static std::string defaultFragPath = ".\\shaders\\basic.frag";
 
 class GraphicsPipeline {
  private:

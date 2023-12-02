@@ -1,6 +1,5 @@
-#ifndef SPATIALOBJECT_HPP
-#define SPATIALOBJECT_HPP
+#include "SpatialObject.hpp"
 
-class SpatialObject {};
+SpatialObject::SpatialObject(/* args */) {}
 
-#endif /* SPATIALOBJECT_HPP */
+SpatialObject::~SpatialObject() {}

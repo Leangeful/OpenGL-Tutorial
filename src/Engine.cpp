@@ -1,16 +1,17 @@
-#include "Core.hpp"
+#include "Engine.hpp"
 #include <iostream>
 
-Core::Core() {}
-Core::Core(const std::string windowTitle, int windowWidth, int windowHeight) {
+Engine::Engine() {}
+Engine::Engine(const std::string windowTitle, int windowWidth,
+               int windowHeight) {
   window = initWindow(windowTitle, windowWidth, windowHeight);
   context = initGL(window);
 }
 
-Core::~Core() {}
+Engine::~Engine() {}
 
-SDL_Window* Core::initWindow(const std::string windowTitle, int windowWidth,
-                             int windowHeight) {
+SDL_Window* Engine::initWindow(const std::string windowTitle, int windowWidth,
+                               int windowHeight) {
   SDL_Window* window = nullptr;
   int err = SDL_Init(SDL_INIT_VIDEO);
   if (err < 0) {
@@ -30,7 +31,7 @@ SDL_Window* Core::initWindow(const std::string windowTitle, int windowWidth,
   return window;
 };
 
-SDL_GLContext Core::initGL(SDL_Window* window) {
+SDL_GLContext Engine::initGL(SDL_Window* window) {
   SDL_GLContext glContext = nullptr;
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 6);

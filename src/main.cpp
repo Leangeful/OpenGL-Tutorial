@@ -1,13 +1,11 @@
 #define SDL_MAIN_HANDLED
 #define BUFFER_OFFSET(i) ((char*)NULL + (i))
 
-#include <iostream>
 #include <vector>
-#include <string>
-#include <filesystem>
+#include <iostream>
 
 #include "GraphicsPipeline.hpp"
-#include "Core.hpp"
+#include "Engine.hpp"
 
 int windowWidth = 500;
 int windowHeight = 500;
@@ -16,7 +14,7 @@ const std::string windowTitle = "OpenGL Window";
 bool shouldQuit = false;
 bool wireframeMode = false;
 
-Core core;
+Engine engine;
 
 GLuint VAO;
 GLuint VBO;
@@ -60,7 +58,7 @@ void cleanUp();
 void printOpenGLVersionInfo();
 
 int main() {
-  core = Core(windowTitle, windowWidth, windowHeight);
+  engine = Engine(windowTitle, windowWidth, windowHeight);
 
   printOpenGLVersionInfo();
 
@@ -80,7 +78,7 @@ void mainLoop() {
     handleInput();
     preDraw();
     draw();
-    SDL_GL_SwapWindow(core.window);
+    SDL_GL_SwapWindow(engine.window);
   }
 };
 
@@ -171,7 +169,7 @@ void draw() {
 
 void cleanUp() {
   std::cout << "CleanUp" << std::endl;
-  SDL_DestroyWindow(core.window);
+  SDL_DestroyWindow(engine.window);
   SDL_Quit();
 };
 
@@ -180,10 +178,5 @@ void printOpenGLVersionInfo() {
   std::cout << "Renderer: " << glGetString(GL_RENDERER) << std::endl;
   std::cout << "Version: " << glGetString(GL_VERSION) << std::endl;
   std::cout << "SL Version: " << glGetString(GL_SHADING_LANGUAGE_VERSION)
-            << std::endl;
-
-  int nrAttributes;
-  glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
-  std::cout << "Maximum nr of vertex attributes supported: " << nrAttributes
             << std::endl;
 }
