@@ -12,7 +12,7 @@ class Scene {
   void draw();
   void addObject(SpatialObject obj);
 
-  GLuint program;
+  GLuint shaderProgram;
   std::vector<SpatialObject> spatialObjects;
 };
 #endif

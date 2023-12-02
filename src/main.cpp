@@ -45,7 +45,7 @@ int main() {
   engine.printOpenGLVersionInfo();
 
   Scene startScene;
-  startScene.program = engine.defaultProgram;
+  startScene.shaderProgram = engine.defaultProgram;
 
   SpatialObject testThing(objectVerts, objectIdxs);
   SpatialObject triangle2(object2, idxs2);
@@ -56,6 +56,8 @@ int main() {
   engine.activeScene = &startScene;
 
   engine.mainLoop();
+
+  engine.cleanUp();
 
   return 0;
 }

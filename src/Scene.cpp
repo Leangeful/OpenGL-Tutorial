@@ -11,6 +11,6 @@ void Scene::draw() {
 }
 
 void Scene::addObject(SpatialObject obj) {
-  if (!obj.program) obj.program = program;
+  if (!obj.shaderProgram) obj.shaderProgram = shaderProgram;
   spatialObjects.push_back(obj);
 }

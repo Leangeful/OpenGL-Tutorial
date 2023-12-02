@@ -12,7 +12,6 @@ class Engine {
   SDL_Window* initWindow();
   SDL_GLContext initGL(SDL_Window* window);
   void preDraw();
-  void cleanUp();
 
   bool shouldQuit = false;
 
@@ -20,9 +19,11 @@ class Engine {
   Engine();
   Engine(std::string title, int width, int height);
   ~Engine();
+
   void mainLoop();
   void handleInput();
   void printOpenGLVersionInfo();
+  void cleanUp();
 
   GLuint windowWidth = 500;
   GLuint windowHeight = 500;

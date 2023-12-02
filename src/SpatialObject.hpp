@@ -23,7 +23,7 @@ class SpatialObject {
 
   void draw();
 
-  GLuint program = 0;
+  GLuint shaderProgram = 0;
 };
 
 #endif /* SPATIALOBJECT_HPP */
