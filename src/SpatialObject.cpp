@@ -1,4 +1,4 @@
-#include "SpatialObject.hpp"
+#include <SpatialObject.hpp>
 
 SpatialObject::SpatialObject() {}
 

@@ -1,11 +1,13 @@
 #define SDL_MAIN_HANDLED
 
+#include <stb_image/stb_image.h>
+
 #include <vector>
 #include <iostream>
 
-#include "Engine.hpp"
-#include "SpatialObject.hpp"
-#include "whereami.h"
+#include <Engine.hpp>
+#include <SpatialObject.hpp>
+#include <whereami.h>
 
 // TODO "settings"
 int windowWidth = 500;
@@ -19,6 +21,8 @@ std::string defaultVertPath = "shaders\\basic.vert";
 std::string defaultFragPath = "shaders\\basic.frag";
 std::string redFragPath = "shaders\\red.frag";
 std::string redVertPath = "shaders\\red.vert";
+
+std::string texPath = "textures\\test_text.jpg";
 
 // TODO import objects from file
 std::vector<vertex> objectVerts{
@@ -59,16 +63,22 @@ void getExePath() {
   exePath = exePath.substr(0, exePath.size() - exeName.size());
 }
 
-void makeShaderPaths() {
+void makePaths() {
   defaultVertPath = exePath + defaultVertPath;
   defaultFragPath = exePath + defaultFragPath;
   redFragPath = exePath + redFragPath;
   redVertPath = exePath + redVertPath;
+  texPath = exePath + texPath;
 }
 
 int main() {
   getExePath();
-  makeShaderPaths();
+  makePaths();
+
+  // just testing
+  int width, height, nrChannels;
+  unsigned char* data =
+      stbi_load(texPath.c_str(), &width, &height, &nrChannels, 0);
 
   std::cout << "Path: " << exePath << std::endl;
   Engine engine = Engine(windowTitle, windowWidth, windowHeight);

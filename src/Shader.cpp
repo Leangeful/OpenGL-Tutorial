@@ -1,4 +1,4 @@
-#include "Shader.hpp"
+#include <Shader.hpp>
 
 std::string Shader::loadShaderFile(std::string& filePath) {
   std::ifstream sourceFile(filePath);

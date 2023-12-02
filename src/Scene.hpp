@@ -2,8 +2,8 @@
 #define SCENE_HPP
 
 #include <vector>
-#include "SpatialObject.hpp"
-#include "Shader.hpp"
+#include <SpatialObject.hpp>
+#include <Shader.hpp>
 
 class Scene {
  public:

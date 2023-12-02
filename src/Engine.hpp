@@ -4,7 +4,7 @@
 #include <SDL2/SDL.h>
 #include <glad/glad.h>
 #include <string>
-#include "Scene.hpp"
+#include <Scene.hpp>
 
 class Engine {
  private:

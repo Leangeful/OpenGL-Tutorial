@@ -3,8 +3,8 @@
 
 #include <vector>
 #include <glad/glad.h>
-#include "types.hpp"
-#include "Shader.hpp"
+#include <types.hpp>
+#include <Shader.hpp>
 
 class SpatialObject {
  private:

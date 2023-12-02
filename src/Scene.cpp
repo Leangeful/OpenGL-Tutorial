@@ -1,4 +1,4 @@
-#include "Scene.hpp"
+#include <Scene.hpp>
 #include <glad/glad.h>
 Scene::Scene() {}
 
