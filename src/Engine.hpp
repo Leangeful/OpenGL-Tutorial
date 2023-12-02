@@ -5,20 +5,35 @@
 #include <glad/glad.h>
 #include <string>
 #include "Scene.hpp"
+#include "GraphicsPipeline.hpp"
 
 class Engine {
  private:
-  SDL_Window* initWindow(const std::string windowTitle, int windowWidth,
-                         int windowHeight);
-
+  SDL_Window* initWindow();
   SDL_GLContext initGL(SDL_Window* window);
+  void preDraw();
+  void cleanUp();
+
+  bool shouldQuit = false;
 
  public:
   Engine();
-  Engine(const std::string windowTitle, int windowWidth, int windowHeight);
+  Engine(std::string title, int width, int height);
   ~Engine();
+  void mainLoop();
+  void handleInput();
+  void printOpenGLVersionInfo();
+
+  GLuint windowWidth = 500;
+  GLuint windowHeight = 500;
+  std::string windowTitle = "OpenGL Window";
+  bool wireframeMode = false;
+
   SDL_Window* window = nullptr;
   SDL_GLContext context = nullptr;
   Scene* activeScene = nullptr;
+
+  // GraphicsPipeline defaultGP;
+  GLuint defaultProgram;
 };
 #endif
