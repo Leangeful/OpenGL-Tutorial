@@ -3,7 +3,7 @@
 #include <fstream>
 #include <cstring>
 
-GLuint GraphicsPipeline::compileShader(GLuint type, const GLchar* source) {
+GLuint compileShader(GLuint type, const GLchar* source) {
   GLuint shader = glCreateShader(type);
 
   std::string typeString =
@@ -27,19 +27,8 @@ GLuint GraphicsPipeline::compileShader(GLuint type, const GLchar* source) {
   return shader;
 }
 
-GraphicsPipeline::GraphicsPipeline() {
-  if (SDL_GL_GetCurrentContext()) {
-    createGraphicsPipeline(defaultVertPath, defaultFragPath);
-  }
-}
-
-GraphicsPipeline::GraphicsPipeline(std::string& vertPath,
-                                   std::string& fragPath) {
-  createGraphicsPipeline(vertPath, fragPath);
-}
-
-void GraphicsPipeline::createGraphicsPipeline(std::string& vertexShaderPath,
-                                              std::string& fragmentShaderPath) {
+GLuint createGraphicsPipeline(std::string& vertexShaderPath,
+                              std::string& fragmentShaderPath) {
   std::string vertexShaderSource = loadShaderFile(vertexShaderPath);
   std::string fragmentShaderSource = loadShaderFile(fragmentShaderPath);
 
@@ -49,31 +38,33 @@ void GraphicsPipeline::createGraphicsPipeline(std::string& vertexShaderPath,
   GLuint vertexShader = compileShader(GL_VERTEX_SHADER, vSource);
   GLuint fragmentShader = compileShader(GL_FRAGMENT_SHADER, fSource);
 
-  program = glCreateProgram();
+  GLuint shaderProgram = glCreateProgram();
   // GLuint program =
-  glAttachShader(program, vertexShader);
-  glAttachShader(program, fragmentShader);
-  glLinkProgram(program);
+  glAttachShader(shaderProgram, vertexShader);
+  glAttachShader(shaderProgram, fragmentShader);
+  glLinkProgram(shaderProgram);
 
   GLint programLinked;
-  glGetProgramiv(program, GL_LINK_STATUS, &programLinked);
+  glGetProgramiv(shaderProgram, GL_LINK_STATUS, &programLinked);
 
   if (!programLinked) {
     GLsizei logLength = 0;
     GLchar message[1024];
-    glGetProgramInfoLog(program, 1024, &logLength, message);
+    glGetProgramInfoLog(shaderProgram, 1024, &logLength, message);
     std::cout << "ERROR SHADER PROGRAM LINKING" << std::endl
               << message << std::endl;
   }
 
-  glDetachShader(program, vertexShader);
-  glDetachShader(program, fragmentShader);
+  glDetachShader(shaderProgram, vertexShader);
+  glDetachShader(shaderProgram, fragmentShader);
 
   glDeleteShader(vertexShader);
   glDeleteShader(fragmentShader);
+
+  return shaderProgram;
 }
 
-std::string GraphicsPipeline::loadShaderFile(std::string& filePath) {
+std::string loadShaderFile(std::string& filePath) {
   std::ifstream sourceFile(filePath);
   std::string source = "";
   std::string tmp;

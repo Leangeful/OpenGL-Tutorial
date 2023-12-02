@@ -18,8 +18,6 @@ Engine::Engine(std::string title, int width, int height) {
   this->windowTitle = title;
   window = initWindow();
   context = initGL(window);
-  // defaultGP = GraphicsPipeline();
-  defaultProgram = GraphicsPipeline().program;
 }
 
 Engine::~Engine() {}

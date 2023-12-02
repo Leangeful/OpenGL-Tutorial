@@ -12,6 +12,10 @@ int windowWidth = 500;
 int windowHeight = 500;
 std::string windowTitle = "OpenGL Window";
 
+std::string defaultVertPath = ".\\shaders\\basic.vert";
+std::string defaultFragPath = ".\\shaders\\basic.frag";
+std::string redFragPath = ".\\shaders\\red.frag";
+
 // TODO import objects from file
 std::vector<vertex> objectVerts{
     {-.2f, .4f, .0f, 0.38f, 0.71f, 0.71f, 1.0f},  //  v0
@@ -32,7 +36,7 @@ std::vector<GLuint> objectIdxs{
 std::vector<vertex> object2{
     {.6f, .5f, .0f, 0.38f, 0.72f, 0.48f, 1.0f},   //  v0
     {1.0f, .5f, .0f, 0.38f, 0.72f, 0.48f, 1.0f},  //  v1
-    {.8f, .8f, .0f, 0.38f, 0.72f, 0.48f, 1.0f},   //  v2
+    {.8f, .8f, .0f, 0.0f, 0.72f, 0.48f, 1.0f},    //  v2
 };
 
 std::vector<GLuint> idxs2{
@@ -44,11 +48,20 @@ int main() {
 
   engine.printOpenGLVersionInfo();
 
+  engine.defaultShaderProgram =
+      createGraphicsPipeline(defaultVertPath, defaultFragPath);
+
   Scene startScene;
-  startScene.shaderProgram = engine.defaultProgram;
+  startScene.shaderProgram = engine.defaultShaderProgram;
 
   SpatialObject testThing(objectVerts, objectIdxs);
   SpatialObject triangle2(object2, idxs2);
+
+  // TODO maintain a list of programs for later use?
+  triangle2.shaderProgram =
+      createGraphicsPipeline(defaultVertPath, redFragPath);
+
+  std::cout << triangle2.shaderProgram << std::endl;
 
   startScene.addObject(testThing);
   startScene.addObject(triangle2);

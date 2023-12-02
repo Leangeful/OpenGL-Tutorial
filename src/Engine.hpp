@@ -35,6 +35,6 @@ class Engine {
   Scene* activeScene = nullptr;
 
   // GraphicsPipeline defaultGP;
-  GLuint defaultProgram;
+  GLuint defaultShaderProgram;
 };
 #endif
