@@ -1,14 +1,29 @@
-
-
 #ifndef SPATIALOBJECT_HPP
 #define SPATIALOBJECT_HPP
 
+#include <vector>
+#include <glad/glad.h>
+#include "types.hpp"
+
 class SpatialObject {
  private:
-  /* data */
+  GLuint VAO;
+  GLuint VBO;
+  GLuint EBO;
+  std::vector<vertex> verts;
+  std::vector<GLuint> idxs;
+
  public:
-  SpatialObject(/* args */);
+  SpatialObject();
+  SpatialObject(std::vector<vertex> objectVerts,
+                std::vector<GLuint> objectIdxs);
   ~SpatialObject();
+
+  void specifyVertices();
+
+  void draw();
+
+  GLuint program = 0;
 };
 
 #endif /* SPATIALOBJECT_HPP */
