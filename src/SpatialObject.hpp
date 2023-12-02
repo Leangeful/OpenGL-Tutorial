@@ -24,6 +24,7 @@ class SpatialObject {
   void draw();
 
   GLuint shaderProgram = 0;
+  GLuint primitiveMode = GL_TRIANGLES;
 };
 
 #endif /* SPATIALOBJECT_HPP */

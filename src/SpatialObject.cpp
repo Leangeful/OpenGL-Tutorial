@@ -14,7 +14,7 @@ SpatialObject::~SpatialObject() {}
 void SpatialObject::draw() {
   glUseProgram(shaderProgram);
   glBindVertexArray(VAO);
-  glDrawElements(GL_TRIANGLES, idxs.size(), GL_UNSIGNED_INT, 0);
+  glDrawElements(primitiveMode, idxs.size(), GL_UNSIGNED_INT, 0);
   glBindVertexArray(0);
   glUseProgram(0);
 }
