@@ -1,4 +1,5 @@
-/build
+/build/*.exe
+/build/*.dll
 /include
 /lib
 .vscode/settings.json

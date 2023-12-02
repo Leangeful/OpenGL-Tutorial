@@ -6,15 +6,19 @@
 #include "GraphicsPipeline.hpp"
 #include "Engine.hpp"
 #include "SpatialObject.hpp"
+#include "whereami.h"
 
 // TODO "settings"
 int windowWidth = 500;
 int windowHeight = 500;
 std::string windowTitle = "OpenGL Window";
+std::string exeName = "build.exe";
 
-std::string defaultVertPath = ".\\shaders\\basic.vert";
-std::string defaultFragPath = ".\\shaders\\basic.frag";
-std::string redFragPath = ".\\shaders\\red.frag";
+std::string exePath = "";
+
+std::string defaultVertPath = "shaders\\basic.vert";
+std::string defaultFragPath = "shaders\\basic.frag";
+std::string redFragPath = "shaders\\red.frag";
 
 // TODO import objects from file
 std::vector<vertex> objectVerts{
@@ -43,7 +47,29 @@ std::vector<GLuint> idxs2{
     0, 1, 2,  // first triangle
 };
 
+void getExePath() {
+  int dirname_length = 512;
+  int length = wai_getModulePath(NULL, 0, NULL);
+  char* path = path = (char*)malloc(length + 1);
+  wai_getModulePath(path, length, &dirname_length);
+  path[length] = '\0';
+
+  exePath = path;
+  free(path);
+  exePath = exePath.substr(0, exePath.size() - exeName.size());
+}
+
+void makeShaderPaths() {
+  defaultVertPath = exePath + defaultVertPath;
+  defaultFragPath = exePath + defaultFragPath;
+  redFragPath = exePath + redFragPath;
+}
+
 int main() {
+  getExePath();
+  makeShaderPaths();
+
+  std::cout << "Path: " << exePath << std::endl;
   Engine engine = Engine(windowTitle, windowWidth, windowHeight);
 
   engine.printOpenGLVersionInfo();
@@ -58,9 +84,9 @@ int main() {
   SpatialObject testThing(objectVerts, objectIdxs);
   SpatialObject triangle2(object2, idxs2);
 
-  triangle2.shaderProgram = redShaderProg;
+  // triangle2.shaderProgram = redShaderProg;
 
-  std::cout << triangle2.shaderProgram << std::endl;
+  // testThing.primitiveMode = GL_TRIANGLE_FAN;
 
   startScene.addObject(testThing);
   startScene.addObject(triangle2);
