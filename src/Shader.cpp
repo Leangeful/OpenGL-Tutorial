@@ -45,17 +45,14 @@ GLuint Shader::compileShader(GLuint type, const GLchar* source) {
 }
 
 Shader::Shader(std::string& vertexPath, std::string& fragmentPath) {
-  std::string vSourceStr = loadShaderFile(vertexPath);
-  std::string fSourceStr = loadShaderFile(fragmentPath);
-  const GLchar* vSource = vSourceStr.c_str();
-  const GLchar* fSource = fSourceStr.c_str();
+  std::string vSource = loadShaderFile(vertexPath);
+  std::string fSource = loadShaderFile(fragmentPath);
 
-  std::cout << "SHADER SOURCE CONST CHAR" << std::endl << vSource << std::endl;
-  GLuint vertexShader = compileShader(GL_VERTEX_SHADER, vSource);
-  GLuint fragmentShader = compileShader(GL_FRAGMENT_SHADER, fSource);
+  GLuint vertexShader = compileShader(GL_VERTEX_SHADER, vSource.c_str());
+  GLuint fragmentShader = compileShader(GL_FRAGMENT_SHADER, fSource.c_str());
 
   ID = glCreateProgram();
-  // GLuint program =
+
   glAttachShader(ID, vertexShader);
   glAttachShader(ID, fragmentShader);
   glLinkProgram(ID);
@@ -79,3 +76,15 @@ Shader::Shader(std::string& vertexPath, std::string& fragmentPath) {
 }
 
 void Shader::use() { glUseProgram(ID); }
+
+void Shader::setBool(const std::string& name, bool value) const {
+  glUniform1i(glGetUniformLocation(ID, name.c_str()), (int)value);
+}
+
+void Shader::setInt(const std::string& name, int value) const {
+  glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
+}
+
+void Shader::setFloat(const std::string& name, float value) const {
+  glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
+}
