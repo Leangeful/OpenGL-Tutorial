@@ -5,6 +5,7 @@
 #include <glad/glad.h>
 #include <types.hpp>
 #include <Shader.hpp>
+#include <Texture.hpp>
 
 class SpatialObject {
  private:
@@ -16,6 +17,7 @@ class SpatialObject {
 
  public:
   Shader* shader = nullptr;
+  Texture* texture = nullptr;
   GLuint primitiveMode = GL_TRIANGLES;
   // TODO create list(s) for shader attributes
 

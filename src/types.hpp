@@ -5,4 +5,5 @@
 struct vertex {
   GLfloat posX, posY, posZ;
   GLfloat colR, colG, colB, colA;
+  GLfloat texU, texV;
 };

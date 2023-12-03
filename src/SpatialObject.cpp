@@ -13,6 +13,8 @@ void SpatialObject::draw() {
   shader->use();
   shader->setFloat("xOffset", 0.5);
   glBindVertexArray(VAO);
+  if (texture) glBindTexture(GL_TEXTURE_2D, texture->ID);
+
   glDrawElements(primitiveMode, idxs.size(), GL_UNSIGNED_INT, 0);
   glBindVertexArray(0);
   glUseProgram(0);
@@ -34,15 +36,22 @@ void SpatialObject::specifyVertices() {
 
   glEnableVertexAttribArray(0);
   glEnableVertexAttribArray(1);
+  glEnableVertexAttribArray(2);
 
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex),
                         BUFFER_OFFSET(0));
+
   glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(vertex),
                         BUFFER_OFFSET(sizeof(GLfloat) * 3));
+
+  glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(vertex),
+                        BUFFER_OFFSET(sizeof(GLfloat) * 7));
 
   glBindVertexArray(0);
   glDisableVertexAttribArray(0);
   glDisableVertexAttribArray(1);
+  glDisableVertexAttribArray(2);
+
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 };
